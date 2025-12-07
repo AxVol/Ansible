@@ -1,5 +1,5 @@
 - name: Setup for ansible
-  hosts: 
+  hosts: {{ HOSTS_GROUP }}
   become: true
 
   tasks:
