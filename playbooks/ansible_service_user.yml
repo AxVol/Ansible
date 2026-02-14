@@ -1,6 +1,9 @@
 - name: Setup for ansible
   hosts: "{{ HOSTS_GROUP }}"
   become: true
+  vars:
+    - password: 
+    - keys_path: 
 
   tasks:
     - name: Create user
@@ -9,7 +12,7 @@
         shell: /bin/bash
         append: true
         groups: "{{ 'sudo' if ansible_os_family == 'Debian' else 'wheel' }}"
-        password: 
+        password: "{{ password }}"
         update_password: on_create
 
     - name: create .ssh folder
@@ -20,7 +23,7 @@
 
     - name: upload ssh keys
       ansible.builtin.copy:
-        src: 
+        src: "{{ keys_path }}"
         dest: "/home/ansible/.ssh/authorized_keys"
         owner: ansible
 

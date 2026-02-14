@@ -5,6 +5,6 @@
 
 - name: add ansible user to docker group
   ansible.builtin.user:
-    name: 
+    name: "{{ docker_user }}"
     groups: docker
     append: true
