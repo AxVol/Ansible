@@ -1,0 +1,5 @@
+---
+# tasks file for docker
+
+- include_tasks: docker_install.yml
+- include_tasks: docker_conf.yml
