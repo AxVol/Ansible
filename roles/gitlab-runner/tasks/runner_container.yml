@@ -1,0 +1,20 @@
+- name: install pip dependencies
+  ansible.builtin.pip:
+    name: "{{ item }}"
+  loop:
+    - packaging
+    - docker
+    - requests
+
+- name: pull docker container
+  community.docker.docker_container:
+    name: gitlab-runner
+    image: gitlab/gitlab-runner:latest
+    state: started
+    recreate: yes
+    restart: yes
+    detach: yes
+    restart_policy: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /srv/gitlab-runner/config:/etc/gitlab-runner
