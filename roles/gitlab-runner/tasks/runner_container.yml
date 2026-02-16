@@ -1,3 +1,12 @@
+- name: install packages for ubuntu
+  ansible.builtin.apt:
+    name: "{{ item }}"
+  loop:
+    - python3-packaging
+    - python3-docker
+    - python3-requests
+  when: ansible_os_family == "Debian"
+
 - name: install pip dependencies
   ansible.builtin.pip:
     name: "{{ item }}"
@@ -5,6 +14,7 @@
     - packaging
     - docker
     - requests
+  when: ansible_os_family == "Red Hat"
 
 - name: pull docker container
   community.docker.docker_container:
