@@ -1,0 +1,38 @@
+- name: Createa custom user in linux system
+  hosts: "{{ HOSTS_GROUP }}"
+  become: yes
+
+  tasks:
+    - name: Create user for Debian
+      ansible.builtin.user:
+        name: "{{ username }}"
+        shell: /bin/bash
+        append: true
+        groups: sudo, adm
+        password: "$6$ngejPdEKl4tPnsxt$/7KQ0oLPxDjxXrQuuE4j7AYKMs/SZtZok8F/81s5wNLUBtg.jhgX.cx6XCsP9hEwsbjC5.GNh.uflSpcmiXAJ/"
+      when: ansible_os_family == "Debian"
+
+    - name: Create user for RedHat
+      ansible.builtin.user:
+        name: "{{ username }}"
+        shell: /bin/bash
+        append: true
+        groups: wheel, adm
+        password: "$6$ngejPdEKl4tPnsxt$/7KQ0oLPxDjxXrQuuE4j7AYKMs/SZtZok8F/81s5wNLUBtg.jhgX.cx6XCsP9hEwsbjC5.GNh.uflSpcmiXAJ/"
+      when: ansible_os_family == "RedHat"
+    
+    - block:
+      - name: Create user for Astra Linux
+        ansible.builtin.user:
+          name: "{{ username }}"
+          shell: /bin/bash
+          append: true
+          groups: sudo, adm, astra-admin, astra-console
+          password: "$6$ngejPdEKl4tPnsxt$/7KQ0oLPxDjxXrQuuE4j7AYKMs/SZtZok8F/81s5wNLUBtg.jhgX.cx6XCsP9hEwsbjC5.GNh.uflSpcmiXAJ/"
+
+      - name: Apply pdpl policy 
+        ansible.builtin.shell: pdpl-user -i 63 "{{ username }}"
+      when: ansible_os_family == "Astra Linux"
+
+    - name: set password expire for first login
+      ansible.builtin.shell: passwd -e "{{ username }}"
