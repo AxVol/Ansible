@@ -1,30 +1,32 @@
-- name: install packages for ubuntu
-  ansible.builtin.apt:
-    name: "{{ item }}"
-  loop:
-    - python3-packaging
-    - python3-docker
-    - python3-requests
-  when: ansible_os_family == "Debian"
+- block:
+  - name: install packages for ubuntu
+    ansible.builtin.apt:
+      name: "{{ item }}"
+    loop:
+      - python3-packaging
+      - python3-docker
+      - python3-requests
+    when: ansible_os_family == "Debian"
 
-- name: install pip dependencies
-  ansible.builtin.pip:
-    name: "{{ item }}"
-  loop:
-    - packaging
-    - docker
-    - requests
-  when: ansible_os_family == "Red Hat"
+  - name: install pip dependencies
+    ansible.builtin.pip:
+      name: "{{ item }}"
+    loop:
+      - packaging
+      - docker
+      - requests
+    when: ansible_os_family == "Red Hat"
 
-- name: pull docker container
-  community.docker.docker_container:
-    name: gitlab-runner
-    image: gitlab/gitlab-runner:latest
-    state: started
-    recreate: yes
-    restart: yes
-    detach: yes
-    restart_policy: always
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /srv/gitlab-runner/config:/etc/gitlab-runner
+  - name: pull docker container
+    community.docker.docker_container:
+      name: gitlab-runner
+      image: gitlab/gitlab-runner:latest
+      state: started
+      recreate: yes
+      restart: yes
+      detach: yes
+      restart_policy: always
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - /srv/gitlab-runner/config:/etc/gitlab-runner
+  when: executor == "docker"

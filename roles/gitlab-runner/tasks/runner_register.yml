@@ -1,4 +1,4 @@
-- name: resgister runner
+- name: resgister docker runner
   ansible.builtin.shell: >
     docker exec --tty gitlab-runner gitlab-runner register
     --non-interactive
@@ -6,3 +6,13 @@
     --token={{ runner_token }}
     --executor=docker
     --docker-image=docker:dind
+  when: executor == "docker"
+
+- name: register shell runner
+  ansible.builtin.shell: >
+    gitlab-runner register
+    --non-interactive
+    --url={{ gitlab_url }}
+    --token={{ runner_token }}
+    --executor=shell
+  when: executor == "shell"

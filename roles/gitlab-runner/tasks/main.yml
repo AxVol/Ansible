@@ -3,5 +3,6 @@
 # tasks file for gitlab-runner
 
 - include_tasks: runner_container.yml
+- include_tasks: runner_shell.yml
 - include_tasks: runner_register.yml
 - include_tasks: runner_conf.yml

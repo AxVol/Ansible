@@ -1,14 +1,16 @@
-- name: change cache conf
-  ansible.builtin.lineinfile:
-    path: /srv/gitlab-runner/config/config.toml
-    regexp: '^(\s*)volumes = \["/cache"\]'
-    line: '    volumes = ["/var/run/docker.sock:/var/run/docker.sock", "/cache"]'
-    owner: root
-    group: root
-    mode: 0644
-    
-- name: restart gitlab container
-  community.docker.docker_container:
-    name: gitlab-runner
-    state: started
-    restart: yes
+- block:
+  - name: change cache conf
+    ansible.builtin.lineinfile:
+      path: /srv/gitlab-runner/config/config.toml
+      regexp: '^(\s*)volumes = \["/cache"\]'
+      line: '    volumes = ["/var/run/docker.sock:/var/run/docker.sock", "/cache"]'
+      owner: root
+      group: root
+      mode: 0644
+      
+  - name: restart gitlab container
+    community.docker.docker_container:
+      name: gitlab-runner
+      state: started
+      restart: yes
+  when: executor == "docker"
