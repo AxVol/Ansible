@@ -2,4 +2,4 @@
 ---
 # defaults file for gitlab-runner
 
-gitlab_url: http://gitlab.smp.local.net
+gitlab_url:
