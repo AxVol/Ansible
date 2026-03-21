@@ -1,5 +1,4 @@
 ---
-# tasks file for base_server
 
 - include_tasks: system_user.yml
 - include_tasks: compile_sources.yml

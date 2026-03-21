@@ -15,8 +15,8 @@
     group: root
 
 - name: copy conf
-  ansible.builtin.copy:
-    src: conf/zabbix_agentd.conf
+  ansible.builtin.template:
+    src: zabbix_agentd.conf.j2
     dest: "{{ item }}"
     mode: "0644"
     owner: root
