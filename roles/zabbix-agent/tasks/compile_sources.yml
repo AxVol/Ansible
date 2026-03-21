@@ -1,0 +1,50 @@
+- name: setup sbin
+  ansible.builtin.copy:
+    src: sbin/zabbix_agentd
+    dest: /usr/sbin/zabbix_agentd
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: create conf directory
+  ansible.builtin.file:
+    path: /etc/zabbix
+    state: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: copy conf
+  ansible.builtin.copy:
+    src: conf/zabbix_agentd.conf
+    dest: "{{ item }}"
+    mode: "0644"
+    owner: root
+    group: root
+  loop:
+    - /etc/zabbix/zabbix_agentd.conf
+    - /usr/local/etc/zabbix_agentd.conf
+
+- name: usr conf
+  ansible.builtin.file:
+    path: /etc/zabbix/zabbix_agentd.conf.d
+    state: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: create run directory
+  ansible.builtin.file:
+    path: /run/zabbix
+    state: directory
+    mode: "0755"
+    owner: zabbix
+    group: zabbix
+
+- name: create log directory
+  ansible.builtin.file:
+    path: /var/log/zabbix-agent
+    state: directory
+    mode: "0755"
+    owner: zabbix
+    group: zabbix

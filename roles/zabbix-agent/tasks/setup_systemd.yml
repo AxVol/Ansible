@@ -1,0 +1,14 @@
+- name: copy systemd file
+  ansible.builtin.copy:
+    src: zabbix-agent.service
+    dest: /etc/systemd/system/zabbix-agent.service
+    mode: "0644"
+    owner: root
+    group: root
+
+- name: systemd reload
+  ansible.builtin.systemd_service:
+    name: zabbix-agent
+    state: restarted
+    enabled: true
+    daemon_reload: true

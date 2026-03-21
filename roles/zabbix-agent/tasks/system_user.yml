@@ -1,0 +1,24 @@
+- name: create zabbix group
+  ansible.builtin.group:
+    name: zabbix
+    state: present
+
+- name: create system user for Debian-based
+  ansible.builtin.user:
+    name: zabbix
+    group: zabbix
+    create_home: false
+    home: /var/lib/zabbix
+    shell: /usr/sbin/nologin
+    system: true
+  when: ansible_os_family == "Debian"
+
+- name: create system user for RedHat-based
+  ansible.builtin.user:
+    name: zabbix
+    group: zabbix
+    create_home: false
+    home: /usr/lib/zabbix
+    shell: /sbin/nologin
+    system: true
+  when: ansible_os_family == "RedHat"
