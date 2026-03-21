@@ -1,0 +1,28 @@
+- name: Createa custom user in linux system
+  hosts: "{{ HOSTS_GROUP }}"
+  become: yes
+
+  tasks:
+    - name: Create user for Debian
+      ansible.builtin.user:
+        name: "{{ username }}"
+        shell: /bin/bash
+        append: true
+        groups: "{{ 'sudo' if ansible_os_family == 'Debian' else 'wheel' }}"
+        password: "{{ password }}"
+    
+    - block:
+      - name: Create user for Astra Linux
+        ansible.builtin.user:
+          name: "{{ username }}"
+          shell: /bin/bash
+          append: true
+          groups: sudo astra-admin, astra-console
+          password: "{{ password }}"
+
+      - name: Apply pdpl policy 
+        ansible.builtin.shell: pdpl-user -i 63 "{{ username }}"
+      when: ansible_os_family == "Astra Linux"
+
+    - name: set password expire for first login
+      ansible.builtin.shell: passwd -e "{{ username }}"
