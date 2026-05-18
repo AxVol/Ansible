@@ -1,10 +1,10 @@
-- name: setup sbin
-  ansible.builtin.copy:
-    src: sbin/zabbix_agentd
-    dest: /usr/sbin/zabbix_agentd
-    owner: root
-    group: root
+- name: create log directory
+  ansible.builtin.file:
+    path: /var/log/zabbix-agent
+    state: directory
     mode: "0755"
+    owner: zabbix
+    group: zabbix
 
 - name: create conf directory
   ansible.builtin.file:
@@ -14,37 +14,75 @@
     owner: root
     group: root
 
-- name: copy conf
-  ansible.builtin.template:
-    src: zabbix_agentd.conf.j2
-    dest: "{{ item }}"
-    mode: "0644"
-    owner: root
-    group: root
-  loop:
-    - /etc/zabbix/zabbix_agentd.conf
-    - /usr/local/etc/zabbix_agentd.conf
+- block:
+    - name: setup sbin
+      ansible.builtin.copy:
+        src: agent1/sbin/zabbix_agentd
+        dest: /usr/sbin/zabbix_agentd
+        owner: root
+        group: root
+        mode: "0755"
 
-- name: usr conf
-  ansible.builtin.file:
-    path: /etc/zabbix/zabbix_agentd.conf.d
-    state: directory
-    mode: "0755"
-    owner: root
-    group: root
+    - name: create conf
+      ansible.builtin.template:
+        src: zabbix_1.conf.j2
+        dest: "{{ item }}"
+        mode: "0644"
+        owner: root
+        group: root
+      loop:
+        - /etc/zabbix/zabbix_agentd.conf
+        - /usr/local/etc/zabbix_agentd.conf
 
-- name: create run directory
-  ansible.builtin.file:
-    path: /run/zabbix
-    state: directory
-    mode: "0755"
-    owner: zabbix
-    group: zabbix
+    - name: usr conf
+      ansible.builtin.file:
+        path: /etc/zabbix/zabbix_agentd.conf.d
+        state: directory
+        mode: "0755"
+        owner: root
+        group: root
 
-- name: create log directory
-  ansible.builtin.file:
-    path: /var/log/zabbix-agent
-    state: directory
-    mode: "0755"
-    owner: zabbix
-    group: zabbix
+    - name: create run directory
+      ansible.builtin.file:
+        path: /run/zabbix
+        state: directory
+        mode: "0755"
+        owner: zabbix
+        group: zabbix
+  when: zabbix_version == "1"
+
+- block:
+    - name: setup Debian-based sbin
+      ansible.builtin.copy:
+        src: agent2/deb/sbin/zabbix_agent2
+        dest: /usr/sbin/zabbix_agent2
+        owner: root
+        group: root
+        mode: "0755"
+      when: ansible_os_family == "Debian" or ansible_os_family == "Astra Linux"
+
+    - name: setup RedHat-based sbin
+      ansible.builtin.copy:
+        src: agent2/yum/sbin/zabbix_agent2
+        dest: /usr/sbin/zabbix_agent2
+        owner: root
+        group: root
+        mode: "0755"
+      when: ansible_os_family == "RedHat"
+
+    - name: create conf
+      ansible.builtin.template:
+        src: zabbix_2.conf.j2
+        dest: /etc/zabbix/zabbix_agent2.conf
+        mode: "0644"
+        owner: root
+        group: root
+    
+    - name: copy d conf
+      ansible.builtin.copy:
+        src: conf/zabbix_agent2.d
+        dest: /etc/zabbix/
+        mode: "0755"
+        owner: root
+        group: root
+  when: zabbix_version == "2"

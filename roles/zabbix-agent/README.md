@@ -1,38 +1,14 @@
 Role Name
 =========
 
-A brief description of the role goes here.
-
-Requirements
-------------
-
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Данная роль предназначена для установки zabbix агента первой и второй версии на сервера, собранные из бинарей. Бинарники собраны для Debian-based на Ubuntu 18 и их работа проверена вплоть до Ubuntu 24, для RedHat-Based собраны на Alma linux 8, работа проверена вплоть до Alma linux 10.
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+Переменные которые 
+```yml
+zabbix_version: - Указывается в inventory файле, и служит указателем для того какую версию агента необходимо установить на данный хост
 
-Dependencies
-------------
-
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
-
-Example Playbook
-----------------
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
-
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+zabbix_ip: - Указывается в директории defaults/main.yml. В ней находится ip адресс заббикс сервера, который используется при генерации conf файла в j2 templates
+```

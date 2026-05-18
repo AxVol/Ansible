@@ -11,7 +11,7 @@
     home: /var/lib/zabbix
     shell: /usr/sbin/nologin
     system: true
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian" or ansible_os_family == "Astra Linux"
 
 - name: create system user for RedHat-based
   ansible.builtin.user:
