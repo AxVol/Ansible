@@ -1,38 +1,20 @@
-Role Name
+Название роли
 =========
+## gitlab-runner
 
-A brief description of the role goes here.
+Роль предназначена для установки на хост gitlab runner и подключения его к gitlab (к self-hosted или gitlab.com).
 
-Requirements
-------------
+Поддерживается установка на RedHat-based и Debian-based.
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Поддерживаемые executors - docker и shell. Выбор делается с помощью переменных, важное замечание что для устанновки любого из вариантов, необходим интернет так как установка производиться в онлайн режиме, оффлайн не поддерживается.
 
-Role Variables
+Переменные роли
 --------------
+### Прописывается в inventory файле
+executor: - Прописывается в inventory файл. Параметр отвечающий за то, какой executror использовать для раннера. Поддерживает следующие значения:
+- "docker" - Вкллючает режим когда раннер устанавливается в режиме docker контейнера с пробросом docker.sock
+- "shell" - Включает установку раннера как обычной службы использующей shell оболочку для выполнения команд на хосте где он будет установлен  
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
-
-Dependencies
-------------
-
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
-
-Example Playbook
-----------------
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
-
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+runner_token: - токен для раннера сгенерированный в gitlab
+### Прописывается в defaults/main.yml
+gitlab_url: - Указывается ссылка на gitlab к которому должен быть подключен раннер
