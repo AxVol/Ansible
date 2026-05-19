@@ -6,14 +6,37 @@
     - keys_path: 
 
   tasks:
-    - name: Create user
+    - name: Create Debian user
       ansible.builtin.user:
         name: ansible
         shell: /bin/bash
         append: true
-        groups: "{{ 'sudo' if ansible_os_family == 'Debian' else 'wheel' }}"
+        groups: sudo
         password: "{{ password }}"
         update_password: on_create
+      when: ansible_os_family == 'Debian'
+
+    - name: Create RedHat user
+      ansible.builtin.user:
+        name: ansible
+        shell: /bin/bash
+        append: true
+        groups: wheel
+        password: "{{ password }}"
+        update_password: on_create
+      when: ansible_os_family == 'RedHat'
+
+    - block:
+        - name: Create Astra linux user
+          ansible.builtin.user:
+            name: ansible
+            shell: /bin/bash
+            append: true
+            groups: sudo, astra-console, astra-admin
+
+        - name: Apply pdpl
+          ansible.builtin.shell: pdpl-user -i 63 ansible
+      wheel: ansible_os_family == 'Astra Linux'
 
     - name: create .ssh folder
       ansible.builtin.file:
@@ -36,7 +59,14 @@
           Match User ansible
           PasswordAuthentication no
 
-    - name: Restart ssh service
+    - name: Restart ssh service for Debian-based
       ansible.builtin.service:
-        name: "{{ 'ssh' if ansible_os_family == 'Debian' else sshd }}"
+        name: ssh
         state: restarted
+      when: ansible_os_family == 'Debian' or ansible_os_family == 'Astra Linux'
+
+    - name: Restart ssh service for RedHat
+      ansible.builtin.service:
+        name: sshd
+        state: restarted
+      when: ansible_os_family == 'RedHat'
