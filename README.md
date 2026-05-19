@@ -2,6 +2,8 @@
 - ***roles/*** - Расположены роли 
 - ***playbooks/*** - Расположены плейбуки с реализацией небольших задач
 - ***ConfigureRemotingForAnsible.ps1*** - PowerShell скрипт для включения winrm на Windows хостах для подключения ansible
+
+[README playbooks](playbooks/README.md)
 ## Описание ролей
 ### docker
 Устанавилвает docker в систему, работает на RedHat-based, Debian-based, Astra Linux
