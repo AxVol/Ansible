@@ -2,8 +2,8 @@
   hosts: "{{ HOSTS_GROUP }}"
   become: true
   vars:
-    - password: 
-    - keys_path: 
+    password: 
+    keys_path: 
 
   tasks:
     - name: Create Debian user
@@ -36,7 +36,7 @@
 
         - name: Apply pdpl
           ansible.builtin.shell: pdpl-user -i 63 ansible
-      wheel: ansible_os_family == 'Astra Linux'
+      when: ansible_os_family == 'Astra Linux'
 
     - name: create .ssh folder
       ansible.builtin.file:
