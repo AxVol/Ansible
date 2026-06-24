@@ -1,33 +1,50 @@
 - when: executor == "shell"
   block:
-  - when: ansible_os_family == "Debian"
-    block:
-    - name: install gitlab sh script for Debian
-      ansible.builtin.get_url:
-        url: "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh"
-        dest: "/home/script.deb.sh"
-        mode: "0744"
+    - when: ansible_os_family == "Debian"
+      block:
+        - name: keyrings dir
+          ansible.builtin.file:
+            path: /etc/apt/keyrings
+            state: directory
+            mode: "0755"
 
-    - name: run sh script
-      ansible.builtin.shell: /home/script.deb.sh
+        - name: Download gitlab runner gpg key
+          ansible.builtin.get_url:
+            url: "https://packages.gitlab.com/gpgkey/gpg.key"
+            dest: "/etc/apt/keyrings/runner_gitlab-runner-archive-keyrings.gpg"
+            mode: "0644"
 
-    - name: install gitlab-runner
-      ansible.builtin.apt:
-        name: gitlab-runner
-        state: latest
+        - name: Add gitlab runner repository
+          ansible.builtin.apt_repository:
+            repo: "deb [signed-by=/etc/apt/keyrings/runner_gitlab-runner-archive-keyrings.gpg] https://packages.gitlab.com/runner/gitlab-runner/{{ ansible_distribution | lower }}/{{ ansible_distribution_release | lower }}/ stable main"
+            state: present
+            filename: runner_gitlab-runner
 
-  - when: ansible_os_family == "RedHat"
-    block:
-    - name: install gitlab sh script for RedHat
-      ansible.builtin.get_url:
-        url: "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.rpm.sh"
-        dest: "/home/script.rpm.sh"
-        mode: "0744"
+        - name: install gitlab-runner
+          ansible.builtin.apt:
+            name: gitlab-runner
+            state: latest
+            update_cache: true
 
-    - name: run sh script
-      ansible.builtin.shell: /home/script.rpm.sh
+    - when: ansible_os_family == "RedHat"
+      block:
+        - name: Import gitlab gpg key
+          ansible.builtin.rpm_key:
+            key: "https://packages.gitlab.com/runner/gitlab-runner/gpgkey"
+            state: present
 
-    - name: install gitlab-runner
-      ansible.builtin.dnf:
-        name: gitlab-runner
-        state: latest
+        - name: add gitlab runner repository
+          ansible.builtin.yum_repository:
+            name: runner_gitlab-runner
+            description: GitLab Runner Repository
+            baseurl: "https://packages.gitlab.com/runner/gitlab-runner/el/{{ ansible_distribution_major_version }}/$basearch/"
+            gpgkey: "https://packages.gitlab.com/runner/gitlab-runner/gpgkey"
+            gpgcheck: true
+            repo_gpgcheck: true
+            enabled: true
+
+        - name: install gitlab-runner
+          ansible.builtin.dnf:
+            name: gitlab-runner
+            state: latest
+            update_cache: true
