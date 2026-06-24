@@ -18,6 +18,10 @@
         name: "{{ username }}"
         shell: /bin/bash
         password: "{{ password }}"
+        update_password: on_create
+      notify: password expire
 
-    - name: set password expire for first login
-      ansible.builtin.shell: passwd -e "{{ username }}"
+  handlers:
+    - name: password expire
+      ansible.builtin.command: passwd -e "{{ username }}"
+      changed_when: true

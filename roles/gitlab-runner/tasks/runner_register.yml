@@ -1,18 +1,36 @@
-- name: resgister docker runner
-  ansible.builtin.shell: >
-    docker exec --tty gitlab-runner gitlab-runner register
-    --non-interactive
-    --url={{ gitlab_url }}
-    --token={{ runner_token }}
-    --executor=docker
-    --docker-image=docker:dind
-  when: executor == "docker"
+- when: executor == "docker"
+  block:
+    - name: check runner already registred
+      ansible.builtin.command: docker exec gitlab-runner gitlab-runner list
+      register: docker_runner_status
+      changed_when: false
+      failed_when: false
 
-- name: register shell runner
-  ansible.builtin.shell: >
-    gitlab-runner register
-    --non-interactive
-    --url={{ gitlab_url }}
-    --token={{ runner_token }}
-    --executor=shell
-  when: executor == "shell"
+    - name: resgister docker runner
+      ansible.builtin.command: >
+        docker exec --tty gitlab-runner gitlab-runner register
+        --non-interactive
+        --url={{ gitlab_url }}
+        --token={{ runner_token }}
+        --executor=docker
+        --docker-image=docker:dind
+      when: gitlab_url not in docker_runner_status.stderr
+      changed_when: true
+
+- when: executor == "shell"
+  block:
+    - name: check runner already registerd
+      ansible.builtin.command: gitlab-runner list
+      register: gitlab_runner_status
+      changed_when: false
+      failed_when: false
+
+    - name: register shell runner
+      ansible.builtin.command: >
+        gitlab-runner register
+        --non-interactive
+        --url={{ gitlab_url }}
+        --token={{ runner_token }}
+        --executor=shell
+      when: gitlab_url not in gitlab_runner_status.stderr
+      changed_when: true

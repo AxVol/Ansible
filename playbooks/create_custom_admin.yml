@@ -20,6 +20,8 @@
         append: true
         groups: "{{ 'sudo' if ansible_os_family == 'Debian' else 'wheel' }}"
         password: "{{ password }}"
+        update_password: on_create
+      notify: password exipre
 
     - when: ansible_os_family == "Astra Linux"
       block:
@@ -30,9 +32,21 @@
           append: true
           groups: sudo astra-admin, astra-console
           password: "{{ password }}"
+          update_password: on_create
+        notify: password exipre
+
+      - name: Check current pdpl policy
+        ansible.builtin.command: pdpl-user -p "{{ username }}"
+        register: pdpl_status
+        changed_when: false
+        failed_when: false
 
       - name: Apply pdpl policy 
-        ansible.builtin.shell: pdpl-user -i 63 "{{ username }}"
-
-    - name: set password expire for first login
-      ansible.builtin.shell: passwd -e "{{ username }}"
+        ansible.builtin.command: pdpl-user -i 63 "{{ username }}"
+        when: "'63' not in pdpl_status.stdout"
+        changed_when: true
+  
+  handlers:
+    - name: password expire
+      ansible.builtin.command: passwd -e "{{ username }}"
+      changed_when: true
