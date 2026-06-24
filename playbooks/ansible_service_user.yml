@@ -1,9 +1,17 @@
 - name: Setup for ansible
-  hosts: "{{ HOSTS_GROUP }}"
+  hosts: "{{ HOSTS_GROUP | default('undefined') }}"
   become: true
   vars:
     password: 
     keys_path: 
+
+  pre_tasks:
+    - name: check hosts
+      ansible.builtin.assert:
+        that:
+          - HOSTS_GROUP is defined
+        fail_msg: "HOSTS_GROUP variable is not defined."
+      run_once: true
 
   tasks:
     - name: Create Debian user
@@ -26,7 +34,8 @@
         update_password: on_create
       when: ansible_os_family == 'RedHat'
 
-    - block:
+    - when: ansible_os_family == 'Astra Linux'
+      block:
         - name: Create Astra linux user
           ansible.builtin.user:
             name: ansible
@@ -36,19 +45,20 @@
 
         - name: Apply pdpl
           ansible.builtin.shell: pdpl-user -i 63 ansible
-      when: ansible_os_family == 'Astra Linux'
 
     - name: create .ssh folder
       ansible.builtin.file:
         path: "/home/ansible/.ssh/"
         state: directory
         owner: ansible
+        mode: "0700"
 
     - name: upload ssh keys
       ansible.builtin.copy:
         src: "{{ keys_path }}"
         dest: "/home/ansible/.ssh/authorized_keys"
         owner: ansible
+        mode: "0600"
 
     - name: Block ssh by password
       ansible.builtin.blockinfile:

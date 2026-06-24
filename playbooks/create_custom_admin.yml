@@ -1,17 +1,28 @@
-- name: Createa custom user in linux system
-  hosts: "{{ HOSTS_GROUP }}"
+- name: Createa custom admin user in linux system
+  hosts: "{{ HOSTS_GROUP | default('undefined') }}"
   become: yes
+  vars:
+    password:
+
+  pre_tasks:
+    - name: check hosts
+      ansible.builtin.assert:
+        that:
+          - HOSTS_GROUP is defined
+        fail_msg: "HOSTS_GROUP variable is not defined."
+      run_once: true
 
   tasks:
-    - name: Create user for Debian
+    - name: Create user for Debian and RedHat 
       ansible.builtin.user:
         name: "{{ username }}"
         shell: /bin/bash
         append: true
         groups: "{{ 'sudo' if ansible_os_family == 'Debian' else 'wheel' }}"
         password: "{{ password }}"
-    
-    - block:
+
+    - when: ansible_os_family == "Astra Linux"
+      block:
       - name: Create user for Astra Linux
         ansible.builtin.user:
           name: "{{ username }}"
@@ -22,7 +33,6 @@
 
       - name: Apply pdpl policy 
         ansible.builtin.shell: pdpl-user -i 63 "{{ username }}"
-      when: ansible_os_family == "Astra Linux"
 
     - name: set password expire for first login
       ansible.builtin.shell: passwd -e "{{ username }}"

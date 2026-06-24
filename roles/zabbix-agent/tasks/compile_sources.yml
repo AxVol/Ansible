@@ -14,7 +14,8 @@
     owner: root
     group: root
 
-- block:
+- when: zabbix_version == "1"
+  block:
     - name: setup sbin
       ansible.builtin.copy:
         src: agent1/sbin/zabbix_agentd
@@ -49,9 +50,9 @@
         mode: "0755"
         owner: zabbix
         group: zabbix
-  when: zabbix_version == "1"
 
-- block:
+- when: zabbix_version == "2"
+  block:
     - name: setup Debian-based sbin
       ansible.builtin.copy:
         src: agent2/deb/sbin/zabbix_agent2
@@ -85,4 +86,3 @@
         mode: "0755"
         owner: root
         group: root
-  when: zabbix_version == "2"

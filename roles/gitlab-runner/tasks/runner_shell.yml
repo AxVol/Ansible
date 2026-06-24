@@ -1,10 +1,12 @@
-- block:
-  - block:
+- when: executor == "shell"
+  block:
+  - when: ansible_os_family == "Debian"
+    block:
     - name: install gitlab sh script for Debian
       ansible.builtin.get_url:
         url: "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh"
         dest: "/home/script.deb.sh"
-        mode: 0744
+        mode: "0744"
 
     - name: run sh script
       ansible.builtin.shell: /home/script.deb.sh
@@ -13,14 +15,14 @@
       ansible.builtin.apt:
         name: gitlab-runner
         state: latest
-    when: ansible_os_family == "Debian"
 
-  - block:
+  - when: ansible_os_family == "RedHat"
+    block:
     - name: install gitlab sh script for RedHat
       ansible.builtin.get_url:
         url: "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.rpm.sh"
         dest: "/home/script.rpm.sh"
-        mode: 0744
+        mode: "0744"
 
     - name: run sh script
       ansible.builtin.shell: /home/script.rpm.sh
@@ -29,6 +31,3 @@
       ansible.builtin.dnf:
         name: gitlab-runner
         state: latest
-    when: ansible_os_family == "RedHat"
-        
-  when: executor == "shell"

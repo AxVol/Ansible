@@ -1,4 +1,5 @@
-- block:
+- when: zabbix_version == "1"
+  block:
     - name: copy systemd file
       ansible.builtin.copy:
         src: agent1/zabbix-agent.service
@@ -13,9 +14,9 @@
         state: restarted
         enabled: true
         daemon_reload: true
-  when: zabbix_version == "1"
 
-- block:
+- when: zabbix_version == "2"
+  block:
     - name: copy systemd file
       ansible.builtin.copy:
         src: agent2/zabbix-agent2.service
@@ -30,4 +31,3 @@
         state: restarted
         enabled: true
         daemon_reload: true
-  when: zabbix_version == "2"

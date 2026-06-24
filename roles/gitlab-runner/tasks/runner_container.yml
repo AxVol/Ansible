@@ -1,4 +1,5 @@
-- block:
+- when: executor == "docker"
+  block:
   - name: install packages for ubuntu
     ansible.builtin.apt:
       name: "{{ item }}"
@@ -15,7 +16,7 @@
       - packaging
       - docker
       - requests
-    when: ansible_os_family == "Red Hat"
+    when: ansible_os_family == "RedHat"
 
   - name: pull docker container
     community.docker.docker_container:
@@ -29,4 +30,3 @@
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
         - /srv/gitlab-runner/config:/etc/gitlab-runner
-  when: executor == "docker"

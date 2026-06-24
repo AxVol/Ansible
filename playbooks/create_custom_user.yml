@@ -1,9 +1,19 @@
 - name: Createa custom user in linux system
-  hosts: "{{ HOSTS_GROUP }}"
+  hosts: "{{ HOSTS_GROUP | default('undefined') }}"
   become: yes
+  vars:
+    password:
+
+  pre_tasks:
+    - name: check hosts
+      ansible.builtin.assert:
+        that:
+          - HOSTS_GROUP is defined
+        fail_msg: "HOSTS_GROUP variable is not defined."
+      run_once: true
 
   tasks:
-    - name: Create user for Debian
+    - name: Create custom user
       ansible.builtin.user:
         name: "{{ username }}"
         shell: /bin/bash

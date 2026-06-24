@@ -1,5 +1,5 @@
 ---
 
-- include_tasks: system_user.yml
-- include_tasks: compile_sources.yml
-- include_tasks: setup_systemd.yml
+- ansible.builtin.include_tasks: system_user.yml
+- ansible.builtin.include_tasks: compile_sources.yml
+- ansible.builtin.include_tasks: setup_systemd.yml
