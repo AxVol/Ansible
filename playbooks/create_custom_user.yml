@@ -1,6 +1,6 @@
 - name: Createa custom user in linux system
   hosts: "{{ HOSTS_GROUP | default('undefined') }}"
-  become: yes
+  become: true
   vars:
     password:
 
