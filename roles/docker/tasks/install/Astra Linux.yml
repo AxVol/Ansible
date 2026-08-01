@@ -1,0 +1,8 @@
+- name: install packages
+  ansible.builtin.apt:
+    update_cache: true
+    name: "{{ item }}"
+  loop:
+    - docker.io
+    - docker-compose
+    - docker-buildx
