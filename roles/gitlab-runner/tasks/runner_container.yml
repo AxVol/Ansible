@@ -30,3 +30,21 @@
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
         - /srv/gitlab-runner/config:/etc/gitlab-runner
+
+  - when: (custom_ca | bool)
+    block:
+      - name: create dir for gitlab-runner cert
+        ansible.builtin.file:
+          path: /srv/gitlab-runner/config/certs
+          state: directory
+          mode: '0644'
+          owner: root
+          group: root
+
+      - name: copy ssl cert
+        ansible.builtin.copy:
+          src: "{{ custom_ca_cert }}"
+          dest: "/srv/gitlab-runner/config/certs/{{ custom_ca_cert }}"
+          mode: '0644'
+          owner: root
+          group: root

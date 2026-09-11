@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: MIT-0
+---
+# handlers file for gitlab-runner
+
+- name: update ca debian
+  ansible.builtin.command: update-ca-certificates
+  changed_when: true
+
+- name: update ca redhat
+  ansible.builtin.command: update-ca-trust
+  changed_when: true

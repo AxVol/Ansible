@@ -3,3 +3,5 @@
 # defaults file for gitlab-runner
 
 gitlab_url: https://gitlab.com
+custom_ca: false
+custom_ca_cert: empty

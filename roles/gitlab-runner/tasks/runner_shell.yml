@@ -26,6 +26,22 @@
             state: latest
             update_cache: true
 
+        - when: (custom_ca | bool)
+          block:
+            - name: CA package
+              ansible.builtin.apt:
+                name: ca-certificates
+                state: present
+
+            - name: copy cert
+              ansible.builtin.copy:
+                src: smp.cert.crt
+                dest: /usr/local/share/ca-certificates/
+                mode: "0644"
+                owner: root
+                groups: root
+              notify: update ca debian
+
     - when: ansible_os_family == "RedHat"
       block:
         - name: Import gitlab gpg key
@@ -48,3 +64,19 @@
             name: gitlab-runner
             state: latest
             update_cache: true
+
+        - when: (custom_ca | bool)
+          block:
+            - name: CA package
+              ansible.builtin.dnf:
+                name: ca-certificates
+                state: present
+
+            - name: copy cert
+              ansible.builtin.copy:
+                src: smp.cert.crt
+                dest: /usr/share/pki/ca-trust-source/anchors/
+                owner: root
+                groups: root
+                mode: "0644"
+              notify: update ca redhat
