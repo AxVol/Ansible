@@ -10,13 +10,13 @@
 
         - name: Download gitlab runner gpg key
           ansible.builtin.get_url:
-            url: "https://packages.gitlab.com/gpgkey/gpg.key"
-            dest: "/etc/apt/keyrings/runner_gitlab-runner-archive-keyrings.gpg"
+            url: "https://packages.gitlab.com/runner/gitlab-runner/gpgkey"
+            dest: "/etc/apt/keyrings/runner_gitlab-runner-archive-keyring.asc"
             mode: "0644"
 
         - name: Add gitlab runner repository
           ansible.builtin.apt_repository:
-            repo: "deb [signed-by=/etc/apt/keyrings/runner_gitlab-runner-archive-keyrings.gpg] https://packages.gitlab.com/runner/gitlab-runner/{{ ansible_distribution | lower }}/{{ ansible_distribution_release | lower }}/ stable main"
+            repo: "deb [signed-by=/etc/apt/keyrings/runner_gitlab-runner-archive-keyring.asc] https://packages.gitlab.com/runner/gitlab-runner/{{ ansible_distribution | lower }} {{ ansible_distribution_release | lower }} main"
             state: present
             filename: runner_gitlab-runner
 
@@ -35,12 +35,15 @@
 
             - name: copy cert
               ansible.builtin.copy:
-                src: smp.cert.crt
+                src: "{{ custom_ca_cert }}"
                 dest: /usr/local/share/ca-certificates/
                 mode: "0644"
                 owner: root
-                groups: root
-              notify: update ca debian
+                group: root
+
+            - name: update ca debian
+              ansible.builtin.command: update-ca-certificates
+              changed_when: true
 
     - when: ansible_os_family == "RedHat"
       block:
@@ -74,9 +77,13 @@
 
             - name: copy cert
               ansible.builtin.copy:
-                src: smp.cert.crt
+                src: "{{ custom_ca_cert }}"
                 dest: /usr/share/pki/ca-trust-source/anchors/
                 owner: root
-                groups: root
+                group: root
                 mode: "0644"
               notify: update ca redhat
+
+            - name: update ca redhat
+              ansible.builtin.command: update-ca-trust
+              changed_when: true
