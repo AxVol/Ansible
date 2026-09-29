@@ -1,50 +1,50 @@
 - when: executor == "docker"
   block:
-  - name: install packages for ubuntu
-    ansible.builtin.apt:
-      name: "{{ item }}"
-    loop:
-      - python3-packaging
-      - python3-docker
-      - python3-requests
-    when: ansible_os_family == "Debian"
+    - name: install packages for ubuntu
+      ansible.builtin.apt:
+        name: "{{ item }}"
+      loop:
+        - python3-packaging
+        - python3-docker
+        - python3-requests
+      when: ansible_os_family == "Debian"
 
-  - name: install pip dependencies
-    ansible.builtin.pip:
-      name: "{{ item }}"
-    loop:
-      - packaging
-      - docker
-      - requests
-    when: ansible_os_family == "RedHat"
+    - name: install pip dependencies
+      ansible.builtin.pip:
+        name: "{{ item }}"
+      loop:
+        - packaging
+        - docker
+        - requests
+      when: ansible_os_family == "RedHat"
 
-  - name: pull docker container
-    community.docker.docker_container:
-      name: gitlab-runner
-      image: gitlab/gitlab-runner:latest
-      state: started
-      recreate: true
-      restart: true
-      detach: true
-      restart_policy: always
-      volumes:
-        - /var/run/docker.sock:/var/run/docker.sock
-        - /srv/gitlab-runner/config:/etc/gitlab-runner
+    - name: pull docker container
+      community.docker.docker_container:
+        name: gitlab-runner
+        image: gitlab/gitlab-runner:latest
+        state: started
+        recreate: true
+        restart: true
+        detach: true
+        restart_policy: always
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
+          - /srv/gitlab-runner/config:/etc/gitlab-runner
 
-  - when: (custom_ca | bool)
-    block:
-      - name: create dir for gitlab-runner cert
-        ansible.builtin.file:
-          path: /srv/gitlab-runner/config/certs
-          state: directory
-          mode: '0644'
-          owner: root
-          group: root
+    - when: (custom_ca | bool)
+      block:
+        - name: create dir for gitlab-runner cert
+          ansible.builtin.file:
+            path: /srv/gitlab-runner/config/certs
+            state: directory
+            mode: '0644'
+            owner: root
+            group: root
 
-      - name: copy ssl cert
-        ansible.builtin.copy:
-          src: "{{ custom_ca_cert }}"
-          dest: "/srv/gitlab-runner/config/certs/{{ custom_ca_cert }}"
-          mode: '0644'
-          owner: root
-          group: root
+        - name: copy ssl cert
+          ansible.builtin.copy:
+            src: "{{ custom_ca_cert }}"
+            dest: "/srv/gitlab-runner/config/certs/{{ custom_ca_cert }}"
+            mode: '0644'
+            owner: root
+            group: root
