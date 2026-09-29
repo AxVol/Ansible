@@ -78,7 +78,7 @@
         mode: "0644"
         owner: root
         group: root
-    
+
     - name: copy d conf
       ansible.builtin.copy:
         src: conf/zabbix_agent2.d

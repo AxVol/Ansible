@@ -23,9 +23,9 @@
       name: gitlab-runner
       image: gitlab/gitlab-runner:latest
       state: started
-      recreate: yes
-      restart: yes
-      detach: yes
+      recreate: true
+      restart: true
+      detach: true
       restart_policy: always
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock

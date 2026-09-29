@@ -2,8 +2,8 @@
   hosts: "{{ HOSTS_GROUP | default('undefined') }}"
   become: true
   vars:
-    password: 
-    keys_path: 
+    password: "$6$WqmCGofqYB9ufoRB$xbK/.shzTTgjhxcyGW3IJSYLTpX5jonTwdldTN9B0EW.y/p1/y3QDTzJXpljt0bv4RRDG3NEylDj1fxihxrM.1"
+    keys_path: /home/ansible/ssh_keys/ansible.pub
 
   pre_tasks:
     - name: check hosts
@@ -44,7 +44,7 @@
             groups: sudo, astra-console, astra-admin
             password: "{{ password }}"
             update_password: on_create
-          
+
         - name: Check current pdpl policy
           ansible.builtin.command: pdpl-user -p ansible
           register: pdpl_status

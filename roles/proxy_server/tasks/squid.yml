@@ -9,7 +9,7 @@
     dest: /etc/squid/squid.conf
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   notify: "restart squid"
 
 - name: create dir for acls
@@ -17,7 +17,7 @@
     path: "/etc/squid/acls"
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
     state: directory
 
 - name: install acl confs
@@ -26,7 +26,7 @@
     dest: "/etc/squid/acls/{{ item }}"
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   loop:
     - black_list
     - block_subnets
